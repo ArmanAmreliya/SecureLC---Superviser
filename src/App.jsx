@@ -1,19 +1,9 @@
 // File: src/App.jsx
 import React, { useEffect, useState } from "react";
 import LoginPage from "./pages/LoginPage";
+import DashboardPage from "./pages/Dashboard";
 import { onAuthChange, signOutUser } from "./services/authService";
-import { Container, CircularProgress, Button } from "@mui/material";
-
-function Dashboard({ user, onSignOut }) {
-  return (
-    <Container sx={{ mt: 6 }}>
-      <h1>Welcome, {user?.email || "Supervisor"}</h1>
-      <Button variant="contained" color="secondary" onClick={onSignOut}>
-        Sign Out
-      </Button>
-    </Container>
-  );
-}
+import { Container, CircularProgress } from "@mui/material";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -44,7 +34,7 @@ function App() {
   }
 
   return user ? (
-    <Dashboard user={user} onSignOut={handleSignOut} />
+    <DashboardPage user={user} onSignOut={handleSignOut} />
   ) : (
     <LoginPage />
   );
