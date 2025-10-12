@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import Container from "@mui/material/Container";
-import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
 import RequestTable from "../components/RequestTable";
 import RequestDetailsModal from "../components/RequestDetailsModal";
+import SummaryStats from "../components/SummaryStats"; // <-- Import the new component
 import { subscribeToRequests } from "../services/firestoreService";
 
 export default function Dashboard() {
@@ -14,14 +14,12 @@ export default function Dashboard() {
     const unsubscribe = subscribeToRequests((data) => {
       const normalized = data.map((doc) => ({
         ...doc,
-        createdAt:
-          doc.createdAt && doc.createdAt.toDate
-            ? doc.createdAt.toDate()
-            : doc.createdAt,
+        createdAt: doc.createdAt?.toDate
+          ? doc.createdAt.toDate()
+          : doc.createdAt,
       }));
       setRequests(normalized);
     });
-
     return () => {
       if (typeof unsubscribe === "function") unsubscribe();
     };
@@ -38,17 +36,18 @@ export default function Dashboard() {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4 }}>
-      <Typography variant="h4" gutterBottom>
-        Dashboard
-      </Typography>
+    <Box>
+      {/* Add the new Summary Stats component at the top */}
+      <SummaryStats requests={requests} />
 
+      {/* The request table is now below the stats */}
       <RequestTable requests={requests} onRowClick={handleRowClick} />
 
+      {/* The modal remains the same */}
       <RequestDetailsModal
         request={isModalOpen ? selectedRequest : null}
         onClose={handleCloseModal}
       />
-    </Container>
+    </Box>
   );
 }

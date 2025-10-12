@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/Dashboard";
+import MainLayout from "./layouts/MainLayout";
 import { onAuthChange, signOutUser } from "./services/authService";
 import { Container, CircularProgress } from "@mui/material";
 
@@ -34,7 +35,9 @@ function App() {
   }
 
   return user ? (
-    <DashboardPage user={user} onSignOut={handleSignOut} />
+    <MainLayout onSignOut={handleSignOut}>
+      <DashboardPage user={user} />
+    </MainLayout>
   ) : (
     <LoginPage />
   );
