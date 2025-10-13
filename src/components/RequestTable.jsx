@@ -144,20 +144,24 @@ function renderStatus(status, theme) {
   }
 }
 
-export default function RequestTable({ 
-  requests = [], 
-  onRowClick, 
-  onApprove, 
-  onDeny, 
+export default function RequestTable({
+  requests = [],
+  onRowClick,
+  onApprove,
+  onDeny,
   onComplete,
-  currentUser = null 
+  currentUser = null,
 }) {
   const theme = useTheme();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [actionDialog, setActionDialog] = useState({ open: false, action: null, request: null });
+  const [actionDialog, setActionDialog] = useState({
+    open: false,
+    action: null,
+    request: null,
+  });
 
   // Filter and search logic
   const filteredRequests = requests.filter((request) => {
@@ -187,7 +191,7 @@ export default function RequestTable({
 
   const handleActionConfirm = async (requestId, notes) => {
     const supervisorId = currentUser?.email || "unknown";
-    
+
     try {
       switch (actionDialog.action) {
         case "approve":
@@ -232,8 +236,8 @@ export default function RequestTable({
       <Box
         sx={{
           p: 3,
-          background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
-          color: "#000",
+          backgroundColor: theme.palette.primary.main,
+          color: theme.palette.primary.contrastText,
           position: "relative",
         }}
       >
@@ -329,63 +333,48 @@ export default function RequestTable({
       <TableContainer>
         <Table sx={{ minWidth: 650 }} aria-label="enhanced requests table">
           <TableHead>
-            <TableRow sx={{ backgroundColor: "rgba(0,0,0,0.02)" }}>
+            <TableRow sx={{ backgroundColor: theme.palette.primary.light }}>
               <TableCell
                 sx={{
-                  fontWeight: 800,
-                  fontSize: "0.9rem",
-                  color: "text.primary",
+                  fontWeight: 700,
+                  color: theme.palette.primary.contrastText,
                   borderBottom: `2px solid ${theme.palette.primary.main}`,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.5px",
                 }}
               >
                 Request Details
               </TableCell>
               <TableCell
                 sx={{
-                  fontWeight: 800,
-                  fontSize: "0.9rem",
-                  color: "text.primary",
+                  fontWeight: 700,
+                  color: theme.palette.primary.contrastText,
                   borderBottom: `2px solid ${theme.palette.primary.main}`,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.5px",
                 }}
               >
                 Location & Type
               </TableCell>
               <TableCell
                 sx={{
-                  fontWeight: 800,
-                  fontSize: "0.9rem",
-                  color: "text.primary",
+                  fontWeight: 700,
+                  color: theme.palette.primary.contrastText,
                   borderBottom: `2px solid ${theme.palette.primary.main}`,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.5px",
                 }}
               >
                 Submitted
               </TableCell>
               <TableCell
                 sx={{
-                  fontWeight: 800,
-                  fontSize: "0.9rem",
-                  color: "text.primary",
+                  fontWeight: 700,
+                  color: theme.palette.primary.contrastText,
                   borderBottom: `2px solid ${theme.palette.primary.main}`,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.5px",
                 }}
               >
                 Status
               </TableCell>
               <TableCell
                 sx={{
-                  fontWeight: 800,
-                  fontSize: "0.9rem",
-                  color: "text.primary",
+                  fontWeight: 700,
+                  color: theme.palette.primary.contrastText,
                   borderBottom: `2px solid ${theme.palette.primary.main}`,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.5px",
                   textAlign: "center",
                 }}
               >
@@ -393,17 +382,14 @@ export default function RequestTable({
               </TableCell>
               <TableCell
                 sx={{
-                  fontWeight: 800,
-                  fontSize: "0.9rem",
-                  color: "text.primary",
+                  fontWeight: 700,
+                  color: theme.palette.primary.contrastText,
                   borderBottom: `2px solid ${theme.palette.primary.main}`,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.5px",
                   textAlign: "center",
-                  width: 200,
+                  width: 120,
                 }}
               >
-                Supervisor Actions
+                Supervisor
               </TableCell>
             </TableRow>
           </TableHead>
@@ -543,65 +529,52 @@ export default function RequestTable({
                     <Stack direction="row" spacing={1} justifyContent="center">
                       {request.status === "pending" && (
                         <>
-                          <Tooltip title="Approve Request">
+                          <Tooltip title="Approve">
                             <IconButton
                               size="small"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 handleActionClick(request, "approve");
                               }}
-                              sx={{
-                                color: "#4CAF50",
-                                "&:hover": {
-                                  backgroundColor: "rgba(76, 175, 80, 0.1)",
-                                },
-                              }}
+                              sx={{ color: theme.palette.success.main }}
                             >
-                              <ThumbUpIcon fontSize="small" />
+                              <CheckCircleIcon fontSize="small" />
                             </IconButton>
                           </Tooltip>
-                          <Tooltip title="Deny Request">
+                          <Tooltip title="Deny">
                             <IconButton
                               size="small"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 handleActionClick(request, "deny");
                               }}
-                              sx={{
-                                color: "#f44336",
-                                "&:hover": {
-                                  backgroundColor: "rgba(244, 67, 54, 0.1)",
-                                },
-                              }}
+                              sx={{ color: theme.palette.error.main }}
                             >
-                              <ThumbDownIcon fontSize="small" />
+                              <CancelIcon fontSize="small" />
                             </IconButton>
                           </Tooltip>
                         </>
                       )}
                       {request.status === "approved" && (
-                        <Tooltip title="Mark as Complete">
+                        <Tooltip title="Complete">
                           <IconButton
                             size="small"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleActionClick(request, "complete");
                             }}
-                            sx={{
-                              color: "#2196F3",
-                              "&:hover": {
-                                backgroundColor: "rgba(33, 150, 243, 0.1)",
-                              },
-                            }}
+                            sx={{ color: theme.palette.info.main }}
                           >
                             <DoneIcon fontSize="small" />
                           </IconButton>
                         </Tooltip>
                       )}
-                      {(request.status === "completed" || request.status === "denied") && (
-                        <Typography variant="caption" color="text.secondary">
-                          Final
-                        </Typography>
+                      {(request.status === "completed" ||
+                        request.status === "denied") && (
+                        <CheckCircleIcon
+                          fontSize="small"
+                          sx={{ color: theme.palette.grey[500] }}
+                        />
                       )}
                     </Stack>
                   </TableCell>

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import PropTypes from "prop-types";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -103,17 +102,17 @@ export default function MainLayout({ children }) {
       to: "/dashboard",
       badge: null,
     },
-    { 
-      text: "Field Operations Map", 
-      icon: <MapIcon />, 
-      to: "/livemap", 
-      badge: "LIVE" 
+    {
+      text: "Field Operations Map",
+      icon: <MapIcon />,
+      to: "/livemap",
+      badge: "LIVE",
     },
-    { 
-      text: "Compliance Audit Log", 
-      icon: <HistoryIcon />, 
-      to: "/auditlog", 
-      badge: null 
+    {
+      text: "Compliance Audit Log",
+      icon: <HistoryIcon />,
+      to: "/auditlog",
+      badge: null,
     },
   ];
 
@@ -133,7 +132,12 @@ export default function MainLayout({ children }) {
       >
         <Toolbar sx={{ py: 2 }}>
           {/* Government Logo and Title */}
-          <Stack direction="row" alignItems="center" spacing={2} sx={{ flexGrow: 1 }}>
+          <Stack
+            direction="row"
+            alignItems="center"
+            spacing={2}
+            sx={{ flexGrow: 1 }}
+          >
             <Box
               sx={{
                 width: 50,
@@ -309,80 +313,52 @@ export default function MainLayout({ children }) {
             boxSizing: "border-box",
             display: "flex",
             flexDirection: "column",
-            backgroundColor: "#F5F5F5",
-            borderRight: "4px solid #FFC107",
+            backgroundColor: "#FAFAFA",
+            borderRight: "2px solid #FFC107",
+            padding: 0,
           },
         }}
       >
-        <Toolbar />
+        <Toolbar sx={{ minHeight: 32 }} />
 
-        {/* Government Navigation Header */}
-        <Paper
-          elevation={0}
-          sx={{
-            p: 2,
-            backgroundColor: "#FFC107",
-            borderRadius: 0,
-            borderBottom: "2px solid #000000",
-          }}
-        >
-          <Typography
-            variant="h6"
-            sx={{
-              fontWeight: 700,
-              color: "#000000",
-              textAlign: "center",
-            }}
-          >
-            SUPERVISOR PORTAL
-          </Typography>
-          <Typography
-            variant="caption"
-            sx={{
-              color: "#000000",
-              fontWeight: 600,
-              textAlign: "center",
-              display: "block",
-            }}
-          >
-            Ministry of Power
-          </Typography>
-        </Paper>
+        {/* Navigation header removed for cleaner sidebar */}
 
-        <Divider sx={{ borderColor: "#E0E0E0" }} />
+        <Divider sx={{ borderColor: "#E0E0E0", mb: 1 }} />
 
         {/* Navigation Items */}
-        <List sx={{ flexGrow: 1, p: 1 }}>
+        <List sx={{ flexGrow: 1, px: 2, py: 1, pt: 3 }}>
           {navItems.map((item) => (
             <ListItem key={item.text} disablePadding sx={{ mb: 1 }}>
               <ListItemButton
                 component={RouterLink}
                 to={item.to}
                 sx={{
-                  borderRadius: 1,
-                  mx: 1,
+                  borderRadius: 2,
                   backgroundColor: isActiveRoute(item.to)
-                    ? "#FFC107"
-                    : "transparent",
-                  color: isActiveRoute(item.to) ? "#000000" : "#000000",
-                  border: isActiveRoute(item.to) 
-                    ? "2px solid #000000" 
-                    : "2px solid #E0E0E0",
+                    ? "#FFF8E1"
+                    : "#FFFFFF",
+                  color: "#000000",
+                  boxShadow: isActiveRoute(item.to)
+                    ? "0 2px 8px rgba(0,0,0,0.04)"
+                    : "none",
+                  border: isActiveRoute(item.to)
+                    ? "2px solid #FFC107"
+                    : "1px solid #E0E0E0",
+                  fontWeight: isActiveRoute(item.to) ? 700 : 500,
+                  mb: 0.5,
+                  px: 2,
+                  py: 1.5,
                   "&:hover": {
-                    backgroundColor: isActiveRoute(item.to)
-                      ? "#F57F17"
-                      : "#FFFFFF",
+                    backgroundColor: "#FFFDE7",
                     borderColor: "#FFC107",
                   },
-                  transition: "all 0.2s ease-in-out",
+                  transition: "all 0.2s",
                 }}
               >
                 <ListItemIcon
                   sx={{
-                    color: isActiveRoute(item.to)
-                      ? "#000000"
-                      : "#424242",
-                    minWidth: 40,
+                    color: isActiveRoute(item.to) ? "#FFC107" : "#757575",
+                    minWidth: 36,
                   }}
                 >
                   {item.icon}
@@ -390,8 +366,8 @@ export default function MainLayout({ children }) {
                 <ListItemText
                   primary={item.text}
                   primaryTypographyProps={{
-                    fontWeight: isActiveRoute(item.to) ? 700 : 600,
-                    fontSize: "0.9rem",
+                    fontWeight: isActiveRoute(item.to) ? 700 : 500,
+                    fontSize: "1rem",
                   }}
                 />
                 {item.badge && (
@@ -400,10 +376,10 @@ export default function MainLayout({ children }) {
                     size="small"
                     sx={{
                       height: 20,
-                      fontSize: "0.65rem",
+                      fontSize: "0.7rem",
                       fontWeight: 700,
-                      backgroundColor: "#000000",
-                      color: "#FFFFFF",
+                      backgroundColor: "#FFC107",
+                      color: "#000000",
                     }}
                   />
                 )}
@@ -413,9 +389,9 @@ export default function MainLayout({ children }) {
         </List>
 
         {/* Government Footer Section */}
-        <Box sx={{ p: 2 }}>
+        <Box sx={{ p: 2, pt: 0 }}>
           <Divider sx={{ mb: 2, borderColor: "#E0E0E0" }} />
-          
+
           {/* Active Supervisor Info */}
           {currentUser && (
             <Paper
@@ -534,7 +510,3 @@ export default function MainLayout({ children }) {
     </Box>
   );
 }
-
-MainLayout.propTypes = {
-  children: PropTypes.node.isRequired,
-};

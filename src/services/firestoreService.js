@@ -12,6 +12,8 @@ import {
   doc,
   serverTimestamp,
   setDoc,
+  writeBatch,
+  limit,
 } from "firebase/firestore";
 import { firebaseConfig } from "../firebaseConfig";
 
@@ -37,30 +39,35 @@ export function subscribeToRequests(callback) {
   return unsubscribe;
 }
 
-export async function updateRequestStatus(id, status, supervisorId = null, notes = null) {
+export async function updateRequestStatus(
+  id,
+  status,
+  supervisorId = null,
+  notes = null
+) {
   try {
     const { doc, updateDoc, serverTimestamp } = await import(
       "firebase/firestore"
     );
     const ref = doc(db, "requests", id);
-    
+
     const updateData = {
       status,
       updatedAt: serverTimestamp(),
-      lastUpdatedBy: supervisorId || "unknown"
+      lastUpdatedBy: supervisorId || "unknown",
     };
-    
+
     // Add notes if provided
     if (notes) {
       updateData.supervisorNotes = notes;
     }
-    
+
     // Add approval/denial timestamp
     if (status === "approved" || status === "denied") {
       updateData.reviewedAt = serverTimestamp();
       updateData.reviewedBy = supervisorId || "unknown";
     }
-    
+
     await updateDoc(ref, updateData);
     return { id, status, ...updateData };
   } catch (error) {
@@ -85,7 +92,103 @@ export async function completeRequest(requestId, supervisorId, notes = null) {
   return updateRequestStatus(requestId, "completed", supervisorId, notes);
 }
 
-// Subscribe to active jobs (approved requests) with live location data
+// Subscribe to active linemen for the live map
+export function subscribeToActiveLinemen(callback) {
+  const q = query(collection(db, "linemen"), where("status", "==", "active"));
+  return onSnapshot(q, (snapshot) => {
+    const linemen = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    callback(linemen);
+  });
+}
+
+// Function to add realistic sample linemen data around Ahmedabad
+export async function addSampleLinemenData() {
+  const linemenRef = collection(db, "linemen");
+  const q = query(linemenRef, limit(1));
+  const snapshot = await getDocs(q);
+
+  // Only add data if the collection is empty
+  if (!snapshot.empty) {
+    console.log("Linemen data already exists. Skipping sample data creation.");
+    return;
+  }
+
+  const batch = writeBatch(db);
+  const sampleLinemen = [
+    {
+      name: "Ramesh Patel",
+      employeeId: "LP-7341",
+      team: "Alpha Team",
+      specialization: "High Voltage",
+      status: "active",
+      contact: { phone: "9876543210", radio: "Alpha-1" },
+      equipment: ["Insulated Gloves", "Voltage Tester", "Safety Harness"],
+      assignment: {
+        substation: "Vasna Substation",
+        workType: "Transformer Repair",
+        priority: "High",
+        estimatedCompletion: new Date(Date.now() + 4 * 60 * 60 * 1000), // 4 hours from now
+      },
+      currentLocation: { latitude: 23.0, longitude: 72.55 },
+      lastUpdate: serverTimestamp(),
+    },
+    {
+      name: "Suresh Kumar",
+      employeeId: "LP-8812",
+      team: "Bravo Team",
+      specialization: "Distribution Lines",
+      status: "active",
+      contact: { phone: "9876543211", radio: "Bravo-1" },
+      equipment: ["Crimpers", "Hot Stick", "Bucket Truck"],
+      assignment: {
+        substation: "Gota Substation",
+        workType: "Line Fault Inspection",
+        priority: "Medium",
+        estimatedCompletion: new Date(Date.now() + 2 * 60 * 60 * 1000), // 2 hours from now
+      },
+      currentLocation: { latitude: 23.08, longitude: 72.53 },
+      lastUpdate: serverTimestamp(),
+    },
+    {
+      name: "Anil Sharma",
+      employeeId: "LP-5256",
+      team: "Charlie Team",
+      specialization: "Transformer Maintenance",
+      status: "active",
+      contact: { phone: "9876543212", radio: "Charlie-1" },
+      equipment: ["Wrenches", "Oil Sampler", "Multimeter"],
+      assignment: {
+        substation: "Naroda Substation",
+        workType: "Routine Check",
+        priority: "Low",
+        estimatedCompletion: new Date(Date.now() + 6 * 60 * 60 * 1000), // 6 hours from now
+      },
+      currentLocation: { latitude: 23.07, longitude: 72.65 },
+      lastUpdate: serverTimestamp(),
+    },
+  ];
+
+  sampleLinemen.forEach((lineman) => {
+    const docRef = doc(linemenRef);
+    batch.set(docRef, lineman);
+  });
+
+  await batch.commit();
+  console.log("Sample linemen data added successfully.");
+}
+
+// Fetch historical (completed or denied) requests for the audit log
+export async function getHistoricalRequests() {
+  const q = query(
+    collection(db, "requests"),
+    where("status", "in", ["completed", "denied"]),
+    orderBy("updatedAt", "desc")
+  );
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+}
+
+// Keep the existing subscribeToActiveJobs function
 // Returns the unsubscribe function.
 export function subscribeToActiveJobs(callback) {
   const q = query(
@@ -135,60 +238,6 @@ export function subscribeToActiveJobs(callback) {
 }
 
 // Get historical requests (completed and denied) for audit log
-export const getHistoricalRequests = async () => {
-  try {
-    const q = query(
-      collection(db, "requests"),
-      where("status", "in", ["completed", "denied"]),
-      orderBy("createdAt", "desc")
-    );
-
-    const querySnapshot = await getDocs(q);
-    const historicalData = querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-
-    return historicalData;
-  } catch (error) {
-    console.error("Error fetching historical requests:", error);
-    return [];
-  }
-};
-
-// Subscribe to active linemen for live map
-export const subscribeToActiveLinemen = (callback) => {
-  try {
-    // Query for active linemen from a dedicated collection
-    const q = query(
-      collection(db, "activeLinemen"),
-      where("status", "==", "active")
-    );
-
-    const unsubscribe = onSnapshot(
-      q,
-      (querySnapshot) => {
-        const activeLinemen = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-          lastUpdate: doc.data().lastUpdate || new Date(),
-        }));
-
-        console.log("Active linemen received:", activeLinemen);
-        callback(activeLinemen);
-      },
-      (error) => {
-        console.error("subscribeToActiveLinemen error", error);
-        callback([]);
-      }
-    );
-
-    return unsubscribe;
-  } catch (error) {
-    console.error("Error setting up active linemen subscription:", error);
-    return () => {};
-  }
-};
 
 // Function to update lineman location (would be called from mobile app)
 export const updateLinemanLocation = async (linemanId, locationData) => {
@@ -203,126 +252,6 @@ export const updateLinemanLocation = async (linemanId, locationData) => {
     return true;
   } catch (error) {
     console.error("Error updating lineman location:", error);
-    return false;
-  }
-};
-
-// Function to add sample linemen data for testing
-export const addSampleLinemenData = async () => {
-  try {
-    const sampleLinemen = [
-      {
-        id: "WORKER001",
-        name: "John Smith",
-        employeeId: "EMP001",
-        team: "Team Alpha",
-        specialization: "High Voltage",
-        currentLocation: {
-          latitude: 37.7749,
-          longitude: -122.4194,
-        },
-        assignment: {
-          jobId: "JOB001",
-          substation: "Mission Substation",
-          workType: "Routine Maintenance",
-          priority: "medium",
-          estimatedCompletion: new Date(Date.now() + 2 * 60 * 60 * 1000), // 2 hours from now
-        },
-        status: "active",
-        lastUpdate: serverTimestamp(),
-        equipment: ["Safety Harness", "Voltage Tester", "Climbing Gear"],
-        contact: {
-          phone: "+1-555-0101",
-          radio: "CH-7",
-        },
-      },
-      {
-        id: "WORKER002",
-        name: "Maria Garcia",
-        employeeId: "EMP002",
-        team: "Team Beta",
-        specialization: "Distribution Lines",
-        currentLocation: {
-          latitude: 37.7849,
-          longitude: -122.4094,
-        },
-        assignment: {
-          jobId: "JOB002",
-          substation: "Sunset Substation",
-          workType: "Emergency Repair",
-          priority: "high",
-          estimatedCompletion: new Date(Date.now() + 1 * 60 * 60 * 1000), // 1 hour from now
-        },
-        status: "active",
-        lastUpdate: serverTimestamp(),
-        equipment: ["Hot Stick", "Wire Cutters", "First Aid Kit"],
-        contact: {
-          phone: "+1-555-0102",
-          radio: "CH-3",
-        },
-      },
-      {
-        id: "WORKER003",
-        name: "David Chen",
-        employeeId: "EMP003",
-        team: "Team Gamma",
-        specialization: "Transformer Maintenance",
-        currentLocation: {
-          latitude: 37.7649,
-          longitude: -122.4294,
-        },
-        assignment: {
-          jobId: "JOB003",
-          substation: "Richmond Substation",
-          workType: "Transformer Inspection",
-          priority: "low",
-          estimatedCompletion: new Date(Date.now() + 3 * 60 * 60 * 1000), // 3 hours from now
-        },
-        status: "active",
-        lastUpdate: serverTimestamp(),
-        equipment: ["Infrared Camera", "Oil Sampling Kit", "Multimeter"],
-        contact: {
-          phone: "+1-555-0103",
-          radio: "CH-5",
-        },
-      },
-      {
-        id: "WORKER004",
-        name: "Rajesh Patel",
-        employeeId: "EMP004",
-        team: "Team Delta",
-        specialization: "Power Line Installation",
-        currentLocation: {
-          latitude: 23.0225,
-          longitude: 72.5714,
-        },
-        assignment: {
-          jobId: "JOB004",
-          substation: "Ahmedabad Central",
-          workType: "Power Line Installation",
-          priority: "high",
-          estimatedCompletion: new Date(Date.now() + 4 * 60 * 60 * 1000), // 4 hours from now
-        },
-        status: "active",
-        lastUpdate: serverTimestamp(),
-        equipment: ["Cable Pullers", "Tension Meter", "Grounding Equipment"],
-        contact: {
-          phone: "+91-98765-43210",
-          radio: "CH-2",
-        },
-      },
-    ];
-
-    // Add each lineman to the activeLinemen collection
-    for (const lineman of sampleLinemen) {
-      const linemanRef = doc(db, "activeLinemen", lineman.id);
-      await setDoc(linemanRef, lineman);
-    }
-
-    console.log("Sample linemen data added successfully");
-    return true;
-  } catch (error) {
-    console.error("Error adding sample linemen data:", error);
     return false;
   }
 };

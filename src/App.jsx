@@ -5,7 +5,7 @@ import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
 import Register from "./pages/Register";
 import DashboardPage from "./pages/Dashboard";
-import LiveMap from "./pages/LiveMap";
+import FieldMap from "./pages/FieldMap";
 import AuditLog from "./pages/AuditLog";
 import MainLayout from "./layouts/MainLayout";
 import { onAuthChange, signOutUser } from "./services/authService";
@@ -68,7 +68,7 @@ function App() {
           element={
             user ? (
               <MainLayout onSignOut={handleSignOut}>
-                <LiveMap user={user} />
+                <FieldMap user={user} />
               </MainLayout>
             ) : (
               <Navigate to="/login" />
