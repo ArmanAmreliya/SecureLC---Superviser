@@ -25,3 +25,7 @@ export async function signOutUser() {
 export function onAuthChange(callback) {
   return onAuthStateChanged(auth, callback);
 }
+
+export function getCurrentUser() {
+  return auth.currentUser;
+}

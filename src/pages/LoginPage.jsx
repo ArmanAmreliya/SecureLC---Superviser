@@ -1,5 +1,6 @@
 // File: src/LoginPage.jsx
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Container,
   Card,
@@ -17,6 +18,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleSignIn = async (e) => {
     e.preventDefault();
@@ -28,7 +30,8 @@ export default function LoginPage() {
     setLoading(true);
     try {
       await signIn(email, password);
-      // on success, the onAuthChange listener in App.jsx will handle navigation
+      // Redirect to dashboard after successful login
+      navigate("/dashboard");
     } catch (err) {
       setError(err.message || "Failed to sign in");
     } finally {
