@@ -157,6 +157,7 @@ export default function RequestTable({
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [onFieldFilter, setOnFieldFilter] = useState("all");
   const [actionDialog, setActionDialog] = useState({
     open: false,
     action: null,
@@ -172,8 +173,18 @@ export default function RequestTable({
 
     const matchesStatus =
       statusFilter === "all" || request.status === statusFilter;
+    const matchesOnField =
+      onFieldFilter === "all" || request.onFieldLineStatus === onFieldFilter;
 
-    return matchesSearch && matchesStatus;
+    return matchesSearch && matchesStatus && matchesOnField;
+  });
+
+  // sort by on-field status if requested (sorted first or last)
+  const sortedRequests = [...filteredRequests].sort((a, b) => {
+    const order = { sorted: 1, unsorted: 0, undefined: -1 };
+    const av = order[a.onFieldLineStatus] ?? order.undefined;
+    const bv = order[b.onFieldLineStatus] ?? order.undefined;
+    return onFieldSortAsc ? bv - av : av - bv;
   });
 
   const handleChangePage = (event, newPage) => {
@@ -221,6 +232,27 @@ export default function RequestTable({
     if (request.faultType?.toLowerCase().includes("urgent")) return "#ff9800";
     return "transparent";
   };
+
+  function renderOnFieldStatus(status) {
+    if (!status) return (
+      <Chip label="Unknown" size="small" sx={{ fontWeight: 700 }} />
+    );
+    const isSorted = status === "sorted";
+    return (
+      <Chip
+        label={isSorted ? "Sorted" : "Unsorted"}
+        size="small"
+        sx={{
+          backgroundColor: isSorted ? theme.palette.success.light : "rgba(0,0,0,0.06)",
+          color: isSorted ? theme.palette.success.main : theme.palette.text.primary,
+          fontWeight: 700,
+        }}
+      />
+    );
+  }
+
+  const [onFieldSortAsc, setOnFieldSortAsc] = useState(true);
+  const handleOnFieldSortToggle = () => setOnFieldSortAsc((s) => !s);
 
   return (
     <Paper
@@ -326,6 +358,34 @@ export default function RequestTable({
               <MenuItem value="denied">Denied</MenuItem>
             </Select>
           </FormControl>
+
+          <FormControl size="small" sx={{ minWidth: 180 }}>
+            <InputLabel sx={{ color: "rgba(0,0,0,0.7)" }}>
+              On-Field Line
+            </InputLabel>
+            <Select
+              value={onFieldFilter}
+              onChange={(e) => setOnFieldFilter(e.target.value)}
+              label="On-Field Line"
+              sx={{
+                backgroundColor: "rgba(255,255,255,0.15)",
+                "& .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "rgba(0,0,0,0.3)",
+                },
+                "&:hover .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "rgba(0,0,0,0.5)",
+                },
+                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "rgba(0,0,0,0.7)",
+                },
+                "& .MuiSelect-select": { color: "#000" },
+              }}
+            >
+              <MenuItem value="all">All (On-field)</MenuItem>
+              <MenuItem value="sorted">Sorted Line</MenuItem>
+              <MenuItem value="unsorted">Unsorted Line</MenuItem>
+            </Select>
+          </FormControl>
         </Stack>
       </Box>
 
@@ -367,8 +427,10 @@ export default function RequestTable({
                   color: theme.palette.primary.contrastText,
                   borderBottom: `2px solid ${theme.palette.primary.main}`,
                 }}
+                onClick={handleOnFieldSortToggle}
+                style={{ cursor: 'pointer' }}
               >
-                Status
+                On-Field Line
               </TableCell>
               <TableCell
                 sx={{
@@ -394,7 +456,7 @@ export default function RequestTable({
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredRequests
+            {sortedRequests
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((request, index) => (
                 <TableRow
@@ -504,6 +566,8 @@ export default function RequestTable({
                   </TableCell>
 
                   <TableCell>{renderStatus(request.status, theme)}</TableCell>
+
+                  <TableCell>{renderOnFieldStatus(request.onFieldLineStatus)}</TableCell>
 
                   <TableCell align="center">
                     <Tooltip title="View Details">

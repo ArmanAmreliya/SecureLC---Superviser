@@ -61,6 +61,8 @@ export default function Dashboard({ user }) {
         createdAt: doc.createdAt?.toDate
           ? doc.createdAt.toDate()
           : doc.createdAt,
+        // ensure onFieldLineStatus exists for UI (values: 'sorted' | 'unsorted')
+        onFieldLineStatus: doc.onFieldLineStatus || "unsorted",
       }));
       setRequests(normalized);
     });

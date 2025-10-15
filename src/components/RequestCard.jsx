@@ -23,6 +23,7 @@ export default function RequestCard({
   substation,
   faultType,
   status,
+  onFieldLineStatus,
   createdAt,
   assignee,
   priority = "normal",
@@ -227,6 +228,33 @@ export default function RequestCard({
               }}
             />
           </Stack>
+          <Stack
+            direction="row"
+            spacing={1}
+            sx={{ mt: 2, alignItems: "center" }}
+          >
+            <Typography
+              variant="caption"
+              sx={{ color: "text.secondary", fontWeight: 600 }}
+            >
+              ON-FIELD
+            </Typography>
+            <Chip
+              label={
+                onFieldLineStatus ? onFieldLineStatus.toUpperCase() : "UNKNOWN"
+              }
+              size="small"
+              sx={{
+                backgroundColor:
+                  onFieldLineStatus === "sorted"
+                    ? "rgba(76,175,80,0.12)"
+                    : "rgba(0,0,0,0.06)",
+                color: onFieldLineStatus === "sorted" ? "#4CAF50" : "#000",
+                fontWeight: 700,
+                fontSize: "0.65rem",
+              }}
+            />
+          </Stack>
         </Box>
       </CardContent>
     </Card>
@@ -242,4 +270,5 @@ RequestCard.propTypes = {
   createdAt: PropTypes.any,
   assignee: PropTypes.string,
   priority: PropTypes.oneOf(["low", "normal", "medium", "high"]),
+  onFieldLineStatus: PropTypes.oneOf(["sorted", "unsorted"]),
 };
