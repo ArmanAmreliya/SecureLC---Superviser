@@ -151,6 +151,10 @@ npm run preview
 ## Security
 
 - Never commit production secrets to git. Use `.env` and add it to `.gitignore`.
+
+Sensitive config cleanup:
+- The project previously contained a root `firebaseConfig.js` with real API keys. That file was removed from the repository and replaced with `firebaseConfig.example.js` (a template). Do NOT commit your real `firebaseConfig.js`.
+- For production deployments use environment variables (Vercel Project Settings → Environment Variables) with the `VITE_...` keys described in the README.
 - For deployed environments, inject secrets using your hosting platform's environment variable feature.
 
 ---

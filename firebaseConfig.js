@@ -1,12 +1,12 @@
-// firebaseConfig.js (repo root)
-// Copy of firebase config for projects that need it at root level.
-// WARNING: Keep secrets out of public repos. Use environment variables for production.
+// firebaseConfig.js (safe template)
+// This file reads from environment variables. Do NOT commit real secrets.
+
 export const firebaseConfig = {
-  apiKey: "AIzaSyCOr2GtOCWPIwK_M1loMzC_6h5lcdkuRus",
-  authDomain: "lc-a6271.firebaseapp.com",
-  projectId: "lc-a6271",
-  storageBucket: "lc-a6271.firebasestorage.app",
-  messagingSenderId: "718886948233",
-  appId: "1:718886948233:web:0c69b842ee2d70437be558",
-  measurementId: "G-RQE8T5DHCK",
+  apiKey: process.env.VITE_FIREBASE_API_KEY || "",
+  authDomain: process.env.VITE_FIREBASE_AUTH_DOMAIN || "",
+  projectId: process.env.VITE_FIREBASE_PROJECT_ID || "",
+  storageBucket: process.env.VITE_FIREBASE_STORAGE_BUCKET || "",
+  messagingSenderId: process.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "",
+  appId: process.env.VITE_FIREBASE_APP_ID || "",
+  measurementId: process.env.VITE_FIREBASE_MEASUREMENT_ID || "",
 };
