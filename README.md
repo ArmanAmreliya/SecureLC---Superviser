@@ -1,168 +1,83 @@
-# SecureLC---Superviser
+# SecureLC Supervisor - Government Lineman Management System
 
-Local development notes and Firebase setup
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Platform](https://img.shields.io/badge/platform-Web-blue.svg)](https://secure-lc-superviser.vercel.app/)
+[![React Version](https://img.shields.io/badge/react-^18.2.0-brightgreen.svg)](https://react.dev/)
+[![Vite Version](https://img.shields.io/badge/vite-^5.4.10-purple.svg)](https://vitejs.dev/)
 
-1. Create a `.env` file in the project root using `.env.example`:
-
-   - Copy `.env.example` to `.env` and fill in the values from your Firebase project settings (Project settings → General → Your apps):
-
-     VITE_FIREBASE_API_KEY=your_api_key_here
-     VITE_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
-     VITE_FIREBASE_PROJECT_ID=your_project_id
-     VITE_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
-     VITE_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
-     VITE_FIREBASE_APP_ID=your_app_id
-
-   - Do NOT commit `.env` to version control. `.env` is already in `.gitignore`.
-
-2. Enable Email/Password sign-in in the Firebase Console (Authentication → Sign-in method).
-
-3. Install dependencies and start the dev server:
-
-```powershell
-pnpm install
-# SecureLC — Superviser (Web)
-
-This repository contains the Supervisor Dashboard web app built with React + Vite and Material UI. The app is scaffolded to use Firebase Authentication and Firestore (stubs provided). This README covers setup, environment configuration, Firebase setup, development, build, and troubleshooting.
-
-## Quick overview
-
-- Project root: `index.html`, `package.json`, `vite.config.js`
-- App source: `src/` — components, pages, services, and config
-- Auth helpers: `src/services/authService.js`
-- Local Firebase config file (for convenience): `src/firebaseConfig.js` (you can replace this with env-based config for production)
+**SecureLC Supervisor** is the central web-based dashboard for the Government of India's Lineman Management System. Designed for supervisors, this platform provides real-time monitoring, management, and auditing of field operations to ensure electrical safety and regulatory compliance.
 
 ---
 
-## Prerequisites
+### **LINKS**
 
-- Node.js 18+ (recommended)
-- A package manager: `pnpm`, `npm`, or `yarn`
-- (Optional) A Firebase project if you want real authentication and Firestore access
-
----
-
-## Environment variables
-
-This project reads Firebase credentials from `src/firebaseConfig.js` by default (for local convenience). For a production setup, prefer environment variables.
-
-Create a `.env` file in the project root using the provided `.env.example`:
-
-```text
-cp .env.example .env
-# then edit .env and add your real values
-```
-
-Required env keys (when using Vite env variables):
-
-- `VITE_FIREBASE_API_KEY`
-- `VITE_FIREBASE_AUTH_DOMAIN`
-- `VITE_FIREBASE_PROJECT_ID`
-- `VITE_FIREBASE_STORAGE_BUCKET`
-- `VITE_FIREBASE_MESSAGING_SENDER_ID`
-- `VITE_FIREBASE_APP_ID`
-
-Make sure `.env` is in `.gitignore` (it is by default in this repo).
+- **Live Supervisor Portal:** **[secure-lc-superviser.vercel.app](https://secure-lc-superviser.vercel.app/)**
+- **Mobile App Repo:** [github.com/ArmanAmreliya/SecureLC](https://github.com/ArmanAmreliya/SecureLC)
+- **Supervisor Web Repo:** [github.com/ArmanAmreliya/SecureLC---Superviser](https://github.com/ArmanAmreliya/SecureLC---Superviser)
 
 ---
 
-## Firebase setup
+## 📸 Landing Page
 
-1. Go to the Firebase Console and create (or open) your project.
-2. In Project Settings → Your apps, register a web app if you haven't already and copy the config values (apiKey, authDomain, projectId, etc.).
-3. Paste those values into `.env` (or into `src/firebaseConfig.js` if you prefer local testing). If you use `.env`, restart the dev server after changes.
-4. Enable Email/Password authentication: Authentication → Sign-in method → enable "Email/Password".
+![SecureLC Landing Page](/LandingPage.jpg)
+---
 
-Note: Do not commit production API keys into public repositories. Use secure environment variable storage for deployed environments.
+## ✨ Core Features
+
+The SecureLC Supervisor portal is a comprehensive tool built to provide a centralized command center for field operations.
+
+* **Real-Time Dashboard:**
+    * **Live Statistics:** View at-a-glance summaries of pending, active, and completed line clear requests.
+    * **Operational Overview:** Monitor key performance metrics like approval rates, completion rates, and compliance status.
+    * **Government-Styled UI:** A professional and clean interface inspired by official government portals for clarity and authority.
+
+* **Request Management:**
+    * **Centralized Request Table:** A detailed, filterable, and searchable table of all incoming line clear requests from field linemen.
+    * **One-Click Actions:** Supervisors can approve, deny, or mark requests as complete directly from the dashboard.
+    * **Detailed Request Modal:** View all information for a specific request, including substation, fault type, notes, and listen to attached audio recordings from the lineman.
+
+* **Live Field Map:**
+    * **Real-time Worker Tracking:** Visualize the live GPS locations of all active field workers on an interactive map.
+    * **Worker Details Popup:** Click on a worker to see their name, ID, current task, and status.
+    * **Multiple Map Views:** Switch between Street, Satellite, and Hybrid map layers for better context.
+
+* **Compliance & Auditing:**
+    * **Historical Audit Log:** Access a complete history of all completed and denied requests for compliance and review.
+    * **Advanced Filtering:** Filter audit logs by status, date range, or search by substation, fault type, or lineman ID.
+    * **Data Export:** Export audit logs to CSV for official reporting and record-keeping.
+
+* **Secure Authentication:**
+    * **Supervisor Login:** Secure login portal for authorized supervisors.
+    * **Firebase Integration:** Built on Firebase for robust and secure authentication and data management.
 
 ---
 
-## Install and run (development)
+## 🛠️ Tech Stack
 
-Using pnpm (recommended):
+This project is built with a modern, robust, and scalable tech stack.
 
-```powershell
-pnpm install
-pnpm run dev
-```
-
-Or with npm:
-
-```powershell
-npm install
-npm run dev
-```
-
-Open the URL printed by Vite (usually `http://localhost:5173`).
+* **Frontend:** [React](https://react.dev/) (`v18.2.0`)
+* **Build Tool:** [Vite](https://vitejs.dev/) (`v5.4.10`)
+* **UI Framework:** [Material-UI (MUI)](https://mui.com/) (`v5.18.0`)
+* **Routing:** [React Router DOM](https://reactrouter.com/) (`v6.20.1`)
+* **Mapping:** [rlayers](https://rlayers.dev/) & [OpenLayers](https://openlayers.org/)
+* **Backend & Database:** [Firebase](https://firebase.google.com/) (`v10.7.1`)
+* **Deployment:** [Vercel](https://vercel.com/)
 
 ---
 
-## Build and preview
+## 🚀 Getting Started
 
-Build for production:
+To run this project locally, follow the steps below.
 
-```powershell
-npm run build
-```
+### Prerequisites
 
-Preview the production build locally:
+* Node.js (v18 or higher recommended)
+* A package manager like `pnpm`, `npm`, or `yarn`
+* A Firebase project with Authentication and Firestore enabled.
 
-```powershell
-npm run preview
-```
+### 1. Clone the Repository
 
----
-
-## Project structure (key files)
-
-- `src/main.jsx` — app entry, mounts React app and ThemeProvider
-- `src/theme.js` — MUI theme (colors and component overrides)
-- `src/firebaseConfig.js` — local convenience Firebase config (replace with env in production)
-- `src/services/authService.js` — signIn, signOutUser, onAuthChange helpers (Firebase)
-- `src/services/firestoreService.js` — Firestore helper stubs
-- `src/pages/*` — top-level pages (LoginPage, Dashboard, AuditLog, LiveMap)
-- `src/components/*` — reusable UI components (RequestCard, RequestTable, etc.)
-
----
-
-## Authentication flow
-
-- `LoginPage.jsx` provides a form which calls `signIn(email, password)` from `src/services/authService.js`.
-- `src/App.jsx` subscribes to auth state via `onAuthChange` and conditionally renders the Dashboard or LoginPage.
-
----
-
-## Development tips & troubleshooting
-
-- If you see network errors like `identitytoolkit.googleapis.com ... 400`, check your `apiKey` and ensure the `.env` or `src/firebaseConfig.js` values are correct.
-- If Vite complains `Failed to parse source for import analysis because the content contains invalid JS syntax. If you are using JSX, make sure to name the file with the .jsx or .tsx extension`, ensure your entry file is `.jsx` (this project uses `src/main.jsx`) and `index.html` points to `/src/main.jsx`.
-- If React is not defined in runtime (ReferenceError), ensure your components import React where needed (or enable automatic JSX runtime).
-- After editing `.env`, restart the dev server so Vite picks up new env values.
-
----
-
-## Testing (manual)
-
-- You can test login by enabling Email/Password sign-in in Firebase and creating a test user (Authentication → Users → Add user).
-- For local-only development without Firebase, ask me to add an in-memory mock auth provider.
-
----
-
-## Security
-
-- Never commit production secrets to git. Use `.env` and add it to `.gitignore`.
-
-Sensitive config cleanup:
-- The project previously contained a root `firebaseConfig.js` with real API keys. That file was removed from the repository and replaced with `firebaseConfig.example.js` (a template). Do NOT commit your real `firebaseConfig.js`.
-- For production deployments use environment variables (Vercel Project Settings → Environment Variables) with the `VITE_...` keys described in the README.
-- For deployed environments, inject secrets using your hosting platform's environment variable feature.
-
----
-
-If you'd like, I can:
-
-- Add a `README.dev.md` with step-by-step screenshots for Firebase console tasks.
-- Add React Router and wire up simple navigation between pages.
-- Implement the in-memory auth fallback for local dev.
-
-Tell me which of the above you'd like next and I'll implement it.
+```bash
+git clone [https://github.com/ArmanAmreliya/SecureLC---Superviser.git](https://github.com/ArmanAmreliya/SecureLC---Superviser.git)
+cd SecureLC---Superviser
